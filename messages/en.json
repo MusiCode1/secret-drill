@@ -60,5 +60,11 @@
 	"toggle_show_arrows": "Show direction",
 	"theme_light": "Light",
 	"theme_dark": "Dark",
-	"theme_system": "System"
+	"theme_system": "System",
+	"home_purpose_title": "Purpose",
+	"home_purpose_body": "Practice passwords so we can actually use truly secure passwords.",
+	"home_features_title": "What's inside",
+	"home_feature_password": "Password practice",
+	"home_feature_pattern": "Mobile unlock pattern practice",
+	"home_star_github": "Star on GitHub"
 }

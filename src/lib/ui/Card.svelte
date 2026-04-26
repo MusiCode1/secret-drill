@@ -16,8 +16,6 @@
 		{interactive ? 'cursor-pointer hover:border-(--color-primary)/50 hover:shadow-md transition-all' : ''}
 		{selected ? 'border-(--color-primary) ring-2 ring-(--color-primary)/20' : ''}
 		{className}"
-	role={interactive ? 'button' : undefined}
-	tabindex={interactive ? 0 : undefined}
 	{...rest}
 >
 	{@render children()}

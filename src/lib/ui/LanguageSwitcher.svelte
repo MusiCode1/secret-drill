@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
 	import { locales, localizeHref, getLocale } from '$lib/paraglide/runtime.js';
 
 	const LOCALE_LABELS: Record<string, string> = {
@@ -8,13 +7,23 @@
 		he: 'HE'
 	};
 
+	function routeForPath(pathname: string): '/' | '/about' | '/password' | '/pattern' {
+		const normalized = pathname.replace(/^\/he(?=\/|$)/, '') || '/';
+
+		if (normalized === '/about') return '/about';
+		if (normalized === '/password') return '/password';
+		if (normalized === '/pattern') return '/pattern';
+
+		return '/';
+	}
+
 	const currentLocale = $derived(getLocale());
 </script>
 
 <nav aria-label="Language" class="flex gap-1">
 	{#each locales as locale}
 		<a
-			href={resolve(localizeHref(page.url.pathname, { locale }))}
+			href={localizeHref(routeForPath(page.url.pathname), { locale })}
 			data-sveltekit-reload
 			class="px-2 py-1 text-sm rounded transition-colors
 				{locale === currentLocale

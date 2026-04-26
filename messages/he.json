@@ -60,5 +60,11 @@
 	"toggle_show_arrows": "הצג כיוון",
 	"theme_light": "בהיר",
 	"theme_dark": "כהה",
-	"theme_system": "מערכת"
+	"theme_system": "מערכת",
+	"home_purpose_title": "המטרה",
+	"home_purpose_body": "לתרגל סיסמאות כדי שנוכל להשתמש בסיסמאות מאובטחות באמת.",
+	"home_features_title": "מה יש בו",
+	"home_feature_password": "תרגול של סיסמה",
+	"home_feature_pattern": "תרגול של תבנית פתיחה של מובייל",
+	"home_star_github": "Star on GitHub"
 }

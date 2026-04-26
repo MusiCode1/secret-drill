@@ -2,6 +2,7 @@
 	import { m } from '$lib/paraglide/messages.js';
 	import { localizeHref } from '$lib/paraglide/runtime.js';
 	import Card from '$lib/ui/Card.svelte';
+	import Button from '$lib/ui/Button.svelte';
 </script>
 
 <div class="space-y-8">
@@ -39,4 +40,27 @@
 			</Card>
 		</a>
 	</div>
+
+	<Card>
+		<div class="space-y-6">
+			<div class="space-y-2">
+				<h2 class="text-xl font-semibold">{m.home_purpose_title()}</h2>
+				<p class="text-(--color-text-muted)">{m.home_purpose_body()}</p>
+			</div>
+
+			<div class="space-y-2">
+				<h2 class="text-xl font-semibold">{m.home_features_title()}</h2>
+				<ul class="list-disc ps-5 text-(--color-text-muted) space-y-1">
+					<li>{m.home_feature_password()}</li>
+					<li>{m.home_feature_pattern()}</li>
+				</ul>
+			</div>
+
+			<div>
+				<a href="https://github.com/MusiCode1/secret-drill" target="_blank" rel="noreferrer" class="no-underline">
+					<Button variant="secondary">{m.home_star_github()}</Button>
+				</a>
+			</div>
+		</div>
+	</Card>
 </div>

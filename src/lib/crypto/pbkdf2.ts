@@ -10,8 +10,8 @@ export interface PBKDF2Result {
 	algorithm: typeof ALGORITHM;
 }
 
-function toBase64(buffer: ArrayBuffer): string {
-	const bytes = new Uint8Array(buffer);
+function toBase64(buffer: ArrayBuffer | Uint8Array): string {
+	const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
 	let binary = '';
 	for (const b of bytes) binary += String.fromCharCode(b);
 	return btoa(binary);
@@ -25,6 +25,7 @@ function fromBase64(b64: string): Uint8Array {
 }
 
 async function deriveKey(plaintext: string, salt: Uint8Array, iterations: number): Promise<ArrayBuffer> {
+	const safeSalt = new Uint8Array(salt);
 	const encoder = new TextEncoder();
 	const keyMaterial = await crypto.subtle.importKey(
 		'raw',
@@ -38,7 +39,7 @@ async function deriveKey(plaintext: string, salt: Uint8Array, iterations: number
 		{
 			name: 'PBKDF2',
 			hash: 'SHA-256',
-			salt,
+			salt: safeSalt,
 			iterations
 		},
 		keyMaterial,
