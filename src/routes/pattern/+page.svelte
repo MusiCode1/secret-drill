@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { m } from '$lib/paraglide/messages.js';
-	import { createPracticeState, type StorageMode, type FeedbackState } from '$lib/practice/practiceState.svelte.js';
+	import { createPracticeState, type StorageMode } from '$lib/practice/practiceState.svelte.js';
 	import { PlainSecret } from '$lib/secrets/PlainSecret.js';
 	import { HashedSecret } from '$lib/secrets/HashedSecret.js';
 	import { hashSecret } from '$lib/crypto/pbkdf2.js';
 	import { analyzePattern } from '$lib/meta/analyzer.js';
 	import { normalizePattern } from '$lib/pattern/normalize.js';
-	import PatternLock from '$lib/pattern/PatternLock.svelte';
 	import Stats from '$lib/practice/Stats.svelte';
+	import StorageSelect from '$lib/practice/StorageSelect.svelte';
+	import BackLink from '$lib/ui/BackLink.svelte';
 	import Button from '$lib/ui/Button.svelte';
-	import Card from '$lib/ui/Card.svelte';
+	import PatternLock from './PatternLock.svelte';
 	import type { PatternMode } from '$lib/pattern/types.js';
 
 	const trainer = createPracticeState();
@@ -26,12 +27,33 @@
 	let isPeeking = $state(false);
 	let peekTimeout: ReturnType<typeof setTimeout> | undefined;
 
+	// Hint display toggles
+	let showNumbers = $state(true);
+	let showArrows = $state(true);
+
+	// Responsive size
+	let containerEl: HTMLDivElement | undefined = $state();
+	let patternSize = $state(280);
+
+	$effect(() => {
+		if (!containerEl) return;
+		const updateSize = () => {
+			patternSize = Math.min(400, containerEl!.clientWidth - 32);
+		};
+		updateSize();
+		const observer = new ResizeObserver(updateSize);
+		observer.observe(containerEl);
+		return () => observer.disconnect();
+	});
+
 	const patternsMatch = $derived(
 		pattern1.length >= 2 &&
 		pattern2.length >= 2 &&
 		pattern1.length === pattern2.length &&
 		pattern1.every((v, i) => v === pattern2[i])
 	);
+
+	const isVisible = $derived(trainer.storageMode === 'visible');
 
 	function selectStorage(mode: StorageMode) {
 		trainer.selectStorage(mode);
@@ -110,7 +132,6 @@
 		3: m.level_3_name()
 	} as Record<number, string>);
 
-	// Get hint pattern for visible/peek modes
 	const hintPattern = $derived.by(() => {
 		const revealed = trainer.secret?.reveal();
 		if (!revealed) return [];
@@ -118,50 +139,25 @@
 	});
 </script>
 
-<div class="space-y-6">
-	<!-- Back button -->
-	<a href="/" class="inline-flex items-center gap-1 text-sm text-(--color-text-muted) hover:text-(--color-text) no-underline transition-colors">
-		<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-			<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-		</svg>
-		{m.action_back()}
-	</a>
+<div class="space-y-6" bind:this={containerEl}>
+	<BackLink />
 
 	{#if trainer.topState === 'MODE_SELECT'}
-		<!-- Storage mode selection -->
-		<div class="space-y-4">
-			<h1 class="text-2xl font-bold">{m.storage_select_title()}</h1>
-			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-				<Card interactive onclick={() => selectStorage('visible')}>
-					<div class="space-y-2">
-						<h3 class="font-semibold text-lg">{m.storage_visible()}</h3>
-						<p class="text-sm text-(--color-text-muted)">{m.storage_visible_desc()}</p>
-					</div>
-				</Card>
-				<Card interactive onclick={() => selectStorage('hashed')}>
-					<div class="space-y-2">
-						<h3 class="font-semibold text-lg">{m.storage_hashed()}</h3>
-						<p class="text-sm text-(--color-text-muted)">{m.storage_hashed_desc()}</p>
-					</div>
-				</Card>
-			</div>
-		</div>
+		<StorageSelect onSelect={selectStorage} />
 
 	{:else if trainer.topState === 'SETUP_1'}
-		<!-- Draw pattern first time -->
 		<div class="space-y-4">
 			<h1 class="text-2xl font-bold">{m.setup_draw_pattern()}</h1>
 			<div class="flex justify-center">
-				<PatternLock mode={setupPatternMode} onPattern={handleSetup1Pattern} />
+				<PatternLock mode={setupPatternMode} onPattern={handleSetup1Pattern} size={patternSize} />
 			</div>
 		</div>
 
 	{:else if trainer.topState === 'SETUP_2'}
-		<!-- Confirm pattern -->
 		<div class="space-y-4">
 			<h1 class="text-2xl font-bold">{m.setup_confirm_pattern()}</h1>
 			<div class="flex justify-center">
-				<PatternLock mode={setupPatternMode} onPattern={handleSetup2Pattern} />
+				<PatternLock mode={setupPatternMode} onPattern={handleSetup2Pattern} size={patternSize} />
 			</div>
 
 			{#if pattern2.length > 0}
@@ -185,16 +181,17 @@
 		</div>
 
 	{:else if trainer.topState === 'PRACTICE'}
-		<!-- Practice mode -->
 		<div class="space-y-6">
-			<!-- Level badge -->
+			<!-- Level badge + meta -->
 			<div class="flex items-center justify-between">
-				<span class="inline-flex items-center gap-2 px-3 py-1 text-sm font-medium rounded-full bg-(--color-primary)/10 text-(--color-primary)">
-					L{trainer.stats.currentLevel}: {levelNames[trainer.stats.currentLevel]}
-				</span>
+				{#if isVisible}
+					<span class="inline-flex items-center gap-2 px-3 py-1 text-sm font-medium rounded-full bg-(--color-primary)/10 text-(--color-primary)">
+						L{trainer.stats.currentLevel}: {levelNames[trainer.stats.currentLevel]}
+					</span>
+				{/if}
 				{#if trainer.secret}
 					{@const meta = trainer.secret.meta()}
-					<span class="text-sm text-(--color-text-muted)">
+					<span class="text-sm text-(--color-text-muted) {isVisible ? '' : 'ms-auto'}">
 						{m.meta_dot_count()}: {meta.dotCount ?? meta.length}
 					</span>
 				{/if}
@@ -202,26 +199,38 @@
 
 			<!-- Pattern input -->
 			<div class="flex justify-center">
-				{#if trainer.stats.currentLevel === 1 && hintPattern.length > 0}
-					<!-- L1: show hint underneath -->
+				{#if isVisible && trainer.stats.currentLevel === 1 && hintPattern.length > 0}
 					<div class="relative">
-						<PatternLock mode="preview" hint={hintPattern} size={280} />
+						<PatternLock mode="preview" hint={hintPattern} size={patternSize} {showNumbers} {showArrows} />
 						<div class="absolute inset-0">
-							<PatternLock mode={practicePatternMode} onPattern={handlePracticePattern} size={280} />
+							<PatternLock mode={practicePatternMode} onPattern={handlePracticePattern} size={patternSize} hint={hintPattern} {showNumbers} />
 						</div>
 					</div>
-				{:else if isPeeking && hintPattern.length > 0}
-					<!-- Peeking: show hint -->
-					<PatternLock mode="preview" hint={hintPattern} size={280} />
+				{:else if isVisible && isPeeking && hintPattern.length > 0}
+					<PatternLock mode="preview" hint={hintPattern} size={patternSize} {showNumbers} {showArrows} />
 				{:else}
 					<PatternLock
 						mode={practicePatternMode}
 						onPattern={handlePracticePattern}
 						disabled={trainer.feedback === 'verifying'}
-						size={280}
+						size={patternSize}
 					/>
 				{/if}
 			</div>
+
+			<!-- Hint toggles (visible mode, L1/L2 only) -->
+			{#if isVisible && trainer.stats.currentLevel <= 2}
+				<div class="flex justify-center gap-4">
+					<label class="flex items-center gap-2 text-sm text-(--color-text-muted) cursor-pointer">
+						<input type="checkbox" bind:checked={showNumbers} class="accent-(--color-primary)" />
+						{m.toggle_show_numbers()}
+					</label>
+					<label class="flex items-center gap-2 text-sm text-(--color-text-muted) cursor-pointer">
+						<input type="checkbox" bind:checked={showArrows} class="accent-(--color-primary)" />
+						{m.toggle_show_arrows()}
+					</label>
+				</div>
+			{/if}
 
 			<!-- Feedback -->
 			{#if trainer.feedback === 'verifying'}
@@ -237,22 +246,21 @@
 				<p class="text-sm text-center text-(--color-text-muted)">{m.practice_draw_pattern()}</p>
 			{/if}
 
-			<!-- Stats -->
 			<Stats stats={trainer.stats} accuracy={trainer.accuracy} />
 
 			<!-- Controls -->
 			<div class="flex flex-wrap justify-center gap-2">
-				{#if trainer.stats.currentLevel === 2 && trainer.storageMode === 'visible'}
+				{#if isVisible && trainer.stats.currentLevel === 2}
 					<Button variant="secondary" onclick={handlePeek} disabled={isPeeking}>
 						{m.action_peek()}
 					</Button>
 				{/if}
-				{#if trainer.stats.currentLevel > 1}
+				{#if isVisible && trainer.stats.currentLevel > 1}
 					<Button variant="ghost" onclick={() => trainer.setLevel((trainer.stats.currentLevel - 1) as 1 | 2)}>
 						{m.action_level_down()}
 					</Button>
 				{/if}
-				{#if trainer.stats.currentLevel < 3}
+				{#if isVisible && trainer.stats.currentLevel < 3}
 					<Button variant="ghost" onclick={() => trainer.setLevel((trainer.stats.currentLevel + 1) as 2 | 3)}>
 						{m.action_level_up()}
 					</Button>

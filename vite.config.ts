@@ -13,8 +13,12 @@ export default defineConfig({
 			strategy: ['url', 'cookie', 'baseLocale']
 		})
 	],
+	server: {
+		allowedHosts: true,
+		host: '0.0.0.0'
+	},
 	test: {
 		include: ['src/**/*.test.ts'],
 		environment: 'jsdom'
-	}
+	},
 });

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { DOTS, dotAt, lineCrossings } from './geometry.js';
+import { DOTS, dotAt, lineCrossings, arrowPoints } from './geometry.js';
 
 describe('geometry', () => {
 	describe('DOTS', () => {
@@ -68,6 +68,75 @@ describe('geometry', () => {
 		it('should return empty array for diagonal adjacent', () => {
 			const crossings = lineCrossings(0, 4);
 			expect(crossings).toHaveLength(0);
+		});
+	});
+
+	describe('arrowPoints', () => {
+		function parsePoints(s: string): Array<{ x: number; y: number }> {
+			return s.split(' ').map((p) => {
+				const [x, y] = p.split(',').map(Number);
+				return { x, y };
+			});
+		}
+
+		it('should return a valid polygon points string with 3 points', () => {
+			const result = arrowPoints(0, 0, 100, 0, 0.5, 10);
+			const points = parsePoints(result);
+			expect(points).toHaveLength(3);
+			points.forEach((p) => {
+				expect(Number.isFinite(p.x)).toBe(true);
+				expect(Number.isFinite(p.y)).toBe(true);
+			});
+		});
+
+		it('should place arrow at specified position along a horizontal line', () => {
+			const result = arrowPoints(0, 50, 100, 50, 0.5, 10);
+			const points = parsePoints(result);
+			// Tip (first point) should be near x=50 (center of line)
+			expect(points[0].x).toBeGreaterThan(45);
+			expect(points[0].x).toBeLessThan(60);
+			expect(points[0].y).toBeCloseTo(50, 0);
+		});
+
+		it('should place arrow at specified position along a vertical line', () => {
+			const result = arrowPoints(50, 0, 50, 100, 0.7, 10);
+			const points = parsePoints(result);
+			// Tip should be near y=70
+			expect(points[0].y).toBeGreaterThan(65);
+			expect(points[0].y).toBeLessThan(80);
+			expect(points[0].x).toBeCloseTo(50, 0);
+		});
+
+		it('should handle diagonal lines', () => {
+			const result = arrowPoints(0, 0, 100, 100, 0.5, 10);
+			const points = parsePoints(result);
+			// Tip should be near (50,50)
+			expect(points[0].x).toBeGreaterThan(45);
+			expect(points[0].x).toBeLessThan(60);
+			expect(points[0].y).toBeGreaterThan(45);
+			expect(points[0].y).toBeLessThan(60);
+		});
+
+		it('should point in the direction of the line (left to right)', () => {
+			const result = arrowPoints(0, 50, 100, 50, 0.5, 10);
+			const points = parsePoints(result);
+			// Tip (first point) should have larger x than base points
+			expect(points[0].x).toBeGreaterThan(points[1].x);
+			expect(points[0].x).toBeGreaterThan(points[2].x);
+		});
+
+		it('should point in the direction of the line (right to left)', () => {
+			const result = arrowPoints(100, 50, 0, 50, 0.5, 10);
+			const points = parsePoints(result);
+			// Tip should have smaller x than base points
+			expect(points[0].x).toBeLessThan(points[1].x);
+			expect(points[0].x).toBeLessThan(points[2].x);
+		});
+
+		it('should handle zero-length line gracefully', () => {
+			const result = arrowPoints(50, 50, 50, 50, 0.5, 10);
+			const points = parsePoints(result);
+			expect(points).toHaveLength(3);
 		});
 	});
 });

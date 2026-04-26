@@ -70,6 +70,51 @@ export function lineCrossings(from: number, to: number): number[] {
 	return crossings;
 }
 
+/**
+ * Compute the SVG polygon points string for an arrowhead on a line.
+ * @param x1, y1 - line start (SVG coords)
+ * @param x2, y2 - line end (SVG coords)
+ * @param position - where along the line (0=start, 1=end), e.g. 0.65
+ * @param size - arrow size in SVG units
+ * @returns polygon points string "x1,y1 x2,y2 x3,y3"
+ */
+export function arrowPoints(
+	x1: number, y1: number,
+	x2: number, y2: number,
+	position: number,
+	size: number
+): string {
+	// Point on the line at `position`
+	const px = x1 + (x2 - x1) * position;
+	const py = y1 + (y2 - y1) * position;
+
+	// Direction vector (normalized)
+	const dx = x2 - x1;
+	const dy = y2 - y1;
+	const len = Math.sqrt(dx * dx + dy * dy);
+	if (len === 0) return `${px},${py} ${px},${py} ${px},${py}`;
+	const nx = dx / len;
+	const ny = dy / len;
+
+	// Perpendicular vector
+	const perpX = -ny;
+	const perpY = nx;
+
+	// Arrow tip (ahead of position)
+	const tipX = px + nx * size * 0.6;
+	const tipY = py + ny * size * 0.6;
+
+	// Arrow base corners (behind position, spread perpendicular)
+	const baseX = px - nx * size * 0.4;
+	const baseY = py - ny * size * 0.4;
+	const leftX = baseX + perpX * size * 0.4;
+	const leftY = baseY + perpY * size * 0.4;
+	const rightX = baseX - perpX * size * 0.4;
+	const rightY = baseY - perpY * size * 0.4;
+
+	return `${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}`;
+}
+
 /** Convert SVG client coordinates to SVG viewBox coordinates */
 export function clientToSvg(svg: SVGSVGElement, clientX: number, clientY: number): Point {
 	const rect = svg.getBoundingClientRect();

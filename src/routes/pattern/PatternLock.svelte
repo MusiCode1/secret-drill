@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { DOTS, DOT_RADIUS, HIT_RADIUS, clientToSvg, dotAt, lineCrossings } from './geometry.js';
-	import type { PatternMode } from './types.js';
+	import { DOTS, DOT_RADIUS, HIT_RADIUS, clientToSvg, dotAt, lineCrossings, arrowPoints } from '$lib/pattern/geometry.js';
+	import type { PatternMode } from '$lib/pattern/types.js';
 
 	interface Props {
 		mode?: PatternMode;
@@ -8,9 +8,19 @@
 		disabled?: boolean;
 		onPattern?: (indices: number[]) => void;
 		size?: number;
+		showNumbers?: boolean;
+		showArrows?: boolean;
 	}
 
-	let { mode = 'input', hint = [], disabled = false, onPattern, size = 280 }: Props = $props();
+	let {
+		mode = 'input',
+		hint = [],
+		disabled = false,
+		onPattern,
+		size = 280,
+		showNumbers = false,
+		showArrows = false
+	}: Props = $props();
 
 	let svgEl: SVGSVGElement | undefined = $state();
 	let activeIndices: number[] = $state([]);
@@ -98,7 +108,18 @@
 		return 'var(--color-primary)';
 	}
 
+	const isPreview = $derived(mode === 'preview' && hint.length > 0);
+	const hasHint = $derived(hint.length > 0);
 	const hintSet = $derived(new Set(hint));
+
+	// Map from dot index to its order in the hint (1-based)
+	const hintOrder = $derived.by(() => {
+		const map = new Map<number, number>();
+		for (let i = 0; i < hint.length; i++) {
+			map.set(hint[i], i + 1);
+		}
+		return map;
+	});
 
 	const linePairs = $derived.by(() => {
 		const displayIndices = mode === 'preview' ? hint : activeIndices;
@@ -142,9 +163,21 @@
 			stroke={lineColor()}
 			stroke-width="2.5"
 			stroke-linecap="round"
-			opacity={mode === 'preview' ? 0.3 : 0.8}
+			opacity={isPreview ? 0.3 : 0.8}
 		/>
 	{/each}
+
+	<!-- Arrows on preview lines -->
+	{#if isPreview && showArrows}
+		{#each linePairs as line}
+			<polygon
+				points={arrowPoints(line.x1, line.y1, line.x2, line.y2, 0.65, 6)}
+				fill={lineColor()}
+				opacity="0.4"
+				class="hint-arrow"
+			/>
+		{/each}
+	{/if}
 
 	<!-- Trailing line to current pointer -->
 	{#if trailingLine}
@@ -165,27 +198,49 @@
 		<!-- Hit area (invisible, larger) -->
 		<circle cx={dot.cx} cy={dot.cy} r={HIT_RADIUS} fill="transparent" />
 
+		{@const isFirst = isPreview && hint.length > 0 && hint[0] === dot.index}
+		{@const isInHint = hintSet.has(dot.index)}
+
 		<!-- Visible dot -->
 		<circle
 			cx={dot.cx}
 			cy={dot.cy}
-			r={selected.has(dot.index) ? DOT_RADIUS * 1.4 : DOT_RADIUS}
-			fill={dotColor(dot.index)}
-			opacity={mode === 'preview' && hintSet.has(dot.index) ? 0.3 : 1}
+			r={selected.has(dot.index)
+				? DOT_RADIUS * 1.4
+				: isFirst
+					? DOT_RADIUS * 1.8
+					: DOT_RADIUS}
+			fill={isFirst ? 'var(--color-primary)' : dotColor(dot.index)}
+			opacity={isPreview && isInHint && !isFirst ? 0.3 : 1}
 			class="transition-[r] duration-100"
 		/>
 
-		<!-- Outer ring for selected dots -->
-		{#if selected.has(dot.index)}
+		<!-- Outer ring for selected dots or first hint dot -->
+		{#if selected.has(dot.index) || isFirst}
 			<circle
 				cx={dot.cx}
 				cy={dot.cy}
-				r={DOT_RADIUS * 2.5}
+				r={isFirst ? DOT_RADIUS * 3 : DOT_RADIUS * 2.5}
 				fill="none"
-				stroke={dotColor(dot.index)}
-				stroke-width="1"
-				opacity="0.3"
+				stroke={isFirst ? 'var(--color-primary)' : dotColor(dot.index)}
+				stroke-width={isFirst ? 1.5 : 1}
+				opacity={isFirst ? 0.5 : 0.3}
 			/>
+		{/if}
+
+		<!-- Numbers on hint dots (rendered in any mode when hint is available) -->
+		{#if hasHint && showNumbers && hintOrder.has(dot.index)}
+			<text
+				x={dot.cx}
+				y={dot.cy}
+				text-anchor="middle"
+				dominant-baseline="central"
+				font-size="5.5"
+				font-weight="bold"
+				fill="var(--color-text)"
+				opacity="0.5"
+				class="hint-number pointer-events-none"
+			>{hintOrder.get(dot.index)}</text>
 		{/if}
 	{/each}
 </svg>

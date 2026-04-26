@@ -1,6 +1,6 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"app_title": "תרגול סיסמאות",
+	"app_title": "SecretDrill",
 	"app_description": "תרגול שינון סיסמאות חדשות ותבניות נעילה",
 	"mode_select_title": "בחירת מצב תרגול",
 	"mode_password": "סיסמה",
@@ -39,6 +39,7 @@
 	"action_reset": "התחלה מחדש",
 	"action_back": "חזרה",
 	"action_continue": "המשך",
+	"action_submit": "שלח",
 	"about_title": "אודות",
 	"about_security_model": "מודל אבטחה",
 	"about_no_data_sent": "שום נתון לא עוזב את הדפדפן",
@@ -53,5 +54,11 @@
 	"meta_has_symbols": "סימנים",
 	"meta_dot_count": "נקודות",
 	"language_en": "English",
-	"language_he": "עברית"
+	"language_he": "עברית",
+	"toggle_auto_verify": "אימות אוטומטי",
+	"toggle_show_numbers": "הצג סדר",
+	"toggle_show_arrows": "הצג כיוון",
+	"theme_light": "בהיר",
+	"theme_dark": "כהה",
+	"theme_system": "מערכת"
 }

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { m } from '$lib/paraglide/messages.js';
+	import { localizeHref } from '$lib/paraglide/runtime.js';
 	import Card from '$lib/ui/Card.svelte';
 </script>
 
@@ -10,7 +11,7 @@
 	</div>
 
 	<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-		<a href="/password" class="no-underline">
+		<a href={localizeHref('/password')} class="no-underline">
 			<Card interactive>
 				<div class="text-center space-y-3">
 					<div class="text-4xl">
@@ -24,7 +25,7 @@
 			</Card>
 		</a>
 
-		<a href="/pattern" class="no-underline">
+		<a href={localizeHref('/pattern')} class="no-underline">
 			<Card interactive>
 				<div class="text-center space-y-3">
 					<div class="text-4xl">

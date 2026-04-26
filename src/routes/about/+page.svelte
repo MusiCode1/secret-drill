@@ -1,15 +1,11 @@
 <script lang="ts">
 	import { m } from '$lib/paraglide/messages.js';
+	import BackLink from '$lib/ui/BackLink.svelte';
 	import Card from '$lib/ui/Card.svelte';
 </script>
 
 <div class="space-y-8">
-	<a href="/" class="inline-flex items-center gap-1 text-sm text-(--color-text-muted) hover:text-(--color-text) no-underline transition-colors">
-		<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-			<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-		</svg>
-		{m.action_back()}
-	</a>
+	<BackLink />
 
 	<h1 class="text-3xl font-bold">{m.about_title()}</h1>
 
@@ -64,8 +60,8 @@
 
 	<section class="space-y-3">
 		<h2 class="text-xl font-semibold">Content Security Policy</h2>
-		<div class="bg-(--color-surface-dim) border border-(--color-surface-border) rounded-(--radius-card) p-4 overflow-x-auto">
-			<code class="text-xs whitespace-pre" dir="ltr">
+		<div dir="ltr" class="bg-(--color-surface-dim) border border-(--color-surface-border) rounded-(--radius-card) p-4 overflow-x-auto">
+			<code class="text-xs whitespace-pre">
 default-src 'self';
 script-src 'self';
 style-src 'self' 'unsafe-inline';

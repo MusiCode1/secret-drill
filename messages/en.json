@@ -1,6 +1,6 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"app_title": "Password Practice",
+	"app_title": "SecretDrill",
 	"app_description": "Practice memorizing new passwords and unlock patterns",
 	"mode_select_title": "Choose practice mode",
 	"mode_password": "Password",
@@ -39,6 +39,7 @@
 	"action_reset": "Start over",
 	"action_back": "Back",
 	"action_continue": "Continue",
+	"action_submit": "Submit",
 	"about_title": "About",
 	"about_security_model": "Security model",
 	"about_no_data_sent": "No data ever leaves your browser",
@@ -53,5 +54,11 @@
 	"meta_has_symbols": "Symbols",
 	"meta_dot_count": "Dots",
 	"language_en": "English",
-	"language_he": "Hebrew"
+	"language_he": "Hebrew",
+	"toggle_auto_verify": "Auto-verify",
+	"toggle_show_numbers": "Show order",
+	"toggle_show_arrows": "Show direction",
+	"theme_light": "Light",
+	"theme_dark": "Dark",
+	"theme_system": "System"
 }

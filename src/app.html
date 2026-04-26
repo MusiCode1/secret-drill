@@ -3,10 +3,9 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta
-			http-equiv="Content-Security-Policy"
-			content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; font-src 'self'; form-action 'none'; base-uri 'self'; frame-ancestors 'none'"
-		/>
+		<!-- CSP enforced via HTTP headers (static/_headers for Cloudflare Pages).
+		     Meta tag removed because: 1) frame-ancestors is ignored in meta, 
+		     2) SvelteKit uses inline scripts that require nonce/hash support. -->
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
