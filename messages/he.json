@@ -66,5 +66,20 @@
 	"home_features_title": "מה יש בו",
 	"home_feature_password": "תרגול של סיסמה",
 	"home_feature_pattern": "תרגול של תבנית פתיחה של מובייל",
-	"home_star_github": "Star on GitHub"
+	"home_star_github": "Star on GitHub",
+	"device_title": "ייצוא למכשיר",
+	"device_desc": "המרת סוד לקלט של android-unlock.",
+	"device_name_label": "שם המכשיר (alias)",
+	"device_pin": "PIN",
+	"device_pin_label": "הזינו PIN",
+	"device_password_label": "הזינו סיסמה",
+	"device_sequence_label": "רצף למכשיר",
+	"device_position_note": "אלה מספרי מיקום (1 = שמאל-עליון … 9 = ימין-תחתון), לא סדר-הציור שמוצג באימון.",
+	"device_command_label": "פקודה",
+	"action_copy": "העתקה",
+	"action_copied": "הועתק!",
+	"action_clear": "נקה",
+	"mode_device": "ייצוא למכשיר",
+	"mode_device_desc": "המרת תבנית/PIN/סיסמה לקלט של android-unlock",
+	"home_feature_device": "ייצוא סוד ל-android-unlock"
 }

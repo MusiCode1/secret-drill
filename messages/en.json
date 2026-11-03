@@ -66,5 +66,20 @@
 	"home_features_title": "What's inside",
 	"home_feature_password": "Password practice",
 	"home_feature_pattern": "Mobile unlock pattern practice",
-	"home_star_github": "Star on GitHub"
+	"home_star_github": "Star on GitHub",
+	"device_title": "Export to device",
+	"device_desc": "Turn a secret into android-unlock input.",
+	"device_name_label": "Device name (alias)",
+	"device_pin": "PIN",
+	"device_pin_label": "Enter PIN",
+	"device_password_label": "Enter password",
+	"device_sequence_label": "Device sequence",
+	"device_position_note": "These are position numbers (1 = top-left … 9 = bottom-right), not the drawing order shown in practice.",
+	"device_command_label": "Command",
+	"action_copy": "Copy",
+	"action_copied": "Copied!",
+	"action_clear": "Clear",
+	"mode_device": "Export to device",
+	"mode_device_desc": "Convert a pattern/PIN/password to android-unlock input",
+	"home_feature_device": "Export a secret to android-unlock"
 }
